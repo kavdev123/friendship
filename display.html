@@ -3,38 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Display Photo</title>
+    <title>Display Photos</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
             background-color: #f0f0f0;
         }
-        #photo-display {
+        .photo-gallery {
             margin-top: 20px;
-            display: block;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .photo-item {
+            margin: 10px;
+        }
+        .photo-item img {
+            width: 200px;
+            height: 150px;
+            border: 1px solid #ccc;
+            box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
         }
         #nav-link {
             margin-top: 20px;
+            display: inline-block;
         }
     </style>
 </head>
 <body>
-    <h1>Last Captured Photo</h1>
-    <img id="photo-display" width="400" height="300" alt="Captured photo will appear here" />
+    <h1>Captured Photos</h1>
+    <div class="photo-gallery" id="photo-gallery"></div>
     <br>
     <a href="index.html" id="nav-link">Go to Capture Page</a>
 
     <script>
-        const photoDisplay = document.getElementById('photo-display');
-        const capturedPhoto = localStorage.getItem('capturedPhoto');
-        
-        // Display the saved photo if it exists
-        if (capturedPhoto) {
-            photoDisplay.src = capturedPhoto;
+        const photoGallery = document.getElementById('photo-gallery');
+        const photos = JSON.parse(localStorage.getItem('capturedPhotos')) || [];
+
+        // Display all saved photos
+        if (photos.length > 0) {
+            photos.forEach((photoData, index) => {
+                const photoItem = document.createElement('div');
+                photoItem.className = 'photo-item';
+                photoItem.innerHTML = `<img src="${photoData}" alt="Captured Photo ${index + 1}">`;
+                photoGallery.appendChild(photoItem);
+            });
         } else {
-            photoDisplay.alt = 'No photo captured yet.';
+            photoGallery.innerHTML = '<p>No photos captured yet.</p>';
         }
     </script>
 </body>
 </html>
+		
