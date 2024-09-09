@@ -42,6 +42,7 @@
         }
         #nav-link {
             margin-top: 20px;
+            display: inline-block;
         }
     </style>
 </head>
@@ -51,15 +52,17 @@
     <canvas id="photo" width="400" height="300"></canvas>
     <br>
     <button id="capture-btn">Capture Photo</button>
-    <button id="save-btn">Give review</button>
+    <button id="save-btn">Save Photo</button>
     <br>
-       <script>
+    <a href="display.html" id="nav-link">Go to Display Page</a>
+
+    <script>
         const camera = document.getElementById('camera');
         const photo = document.getElementById('photo');
         const captureBtn = document.getElementById('capture-btn');
         const saveBtn = document.getElementById('save-btn');
         const context = photo.getContext('2d');
-        
+
         // Access user's webcam
         navigator.mediaDevices.getUserMedia({ video: true })
             .then(stream => {
@@ -79,7 +82,9 @@
         // Save the photo to localStorage
         saveBtn.addEventListener('click', () => {
             const imageData = photo.toDataURL('image/png');
-            localStorage.setItem('capturedPhoto', imageData);
+            let photos = JSON.parse(localStorage.getItem('capturedPhotos')) || [];
+            photos.push(imageData);
+            localStorage.setItem('capturedPhotos', JSON.stringify(photos));
             alert('Photo saved!');
         });
     </script>
