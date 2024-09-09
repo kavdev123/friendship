@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Capture</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f0f0;
+        }
+        #camera {
+            margin-top: 20px;
+        }
+        #photo {
+            margin: 20px;
+            display: none;
+        }
+        #capture-btn {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #capture-btn:hover {
+            background-color: #218838;
+        }
+        #save-btn {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: none;
+        }
+        #save-btn:hover {
+            background-color: #0056b3;
+        }
+        #nav-link {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Capture a Photo</h1>
+    <video id="camera" width="400" height="300" autoplay></video>
+    <canvas id="photo" width="400" height="300"></canvas>
+    <br>
+    <button id="capture-btn">Capture Photo</button>
+    <button id="save-btn">Give review</button>
+    <br>
+       <script>
+        const camera = document.getElementById('camera');
+        const photo = document.getElementById('photo');
+        const captureBtn = document.getElementById('capture-btn');
+        const saveBtn = document.getElementById('save-btn');
+        const context = photo.getContext('2d');
+        
+        // Access user's webcam
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                camera.srcObject = stream;
+            })
+            .catch(err => {
+                console.log('Error accessing camera: ' + err);
+            });
+
+        // Capture the photo from the webcam feed
+        captureBtn.addEventListener('click', () => {
+            context.drawImage(camera, 0, 0, photo.width, photo.height);
+            photo.style.display = 'block';
+            saveBtn.style.display = 'inline';
+        });
+
+        // Save the photo to localStorage
+        saveBtn.addEventListener('click', () => {
+            const imageData = photo.toDataURL('image/png');
+            localStorage.setItem('capturedPhoto', imageData);
+            alert('Photo saved!');
+        });
+    </script>
+</body>
+</html>
