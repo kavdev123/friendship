@@ -3,90 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Photo Capture</title>
+    <title>Form and Photo Capture</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
         }
-        #camera {
-            margin-top: 20px;
+        form {
+            margin-bottom: 20px;
         }
-        #photo {
-            margin: 20px;
-            display: none;
+        label {
+            display: block;
+            margin-bottom: 5px;
         }
-        #capture-btn {
-            background-color: #28a745;
-            color: white;
-            padding: 10px 20px;
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 10px;
+            background-color: yellow;
             border: none;
-            border-radius: 5px;
             cursor: pointer;
         }
-        #capture-btn:hover {
-            background-color: #218838;
-        }
-        #save-btn {
-            background-color: #007bff;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            display: none;
-        }
-        #save-btn:hover {
-            background-color: #0056b3;
-        }
-        #nav-link {
-            margin-top: 20px;
-            display: inline-block;
+        video, canvas {
+            display: block;
+            margin-top: 10px;
+            max-width: 100%;
         }
     </style>
 </head>
 <body>
-    <h1>Capture a Photo</h1>
-    <video id="camera" width="400" height="300" autoplay></video>
-    <canvas id="photo" width="400" height="300"></canvas>
-    <br>
-    <button id="capture-btn">Capture Photo</button>
-    <button id="save-btn">Save Photo</button>
-    <br>
-    <a href="display.html" id="nav-link">Go to Display Page</a>
 
-    <script>
-        const camera = document.getElementById('camera');
-        const photo = document.getElementById('photo');
-        const captureBtn = document.getElementById('capture-btn');
-        const saveBtn = document.getElementById('save-btn');
-        const context = photo.getContext('2d');
+<h2>Fill in Your Information</h2>
 
-        // Access user's webcam
-        navigator.mediaDevices.getUserMedia({ video: true })
-            .then(stream => {
-                camera.srcObject = stream;
-            })
-            .catch(err => {
-                console.log('Error accessing camera: ' + err);
-            });
+<form id="userForm">
+    <label for="name">Name:</label>
+    <input type="text" id="name" required>
 
-        // Capture the photo from the webcam feed
-        captureBtn.addEventListener('click', () => {
-            context.drawImage(camera, 0, 0, photo.width, photo.height);
-            photo.style.display = 'block';
-            saveBtn.style.display = 'inline';
+    <label for="phone">Phone Number:</label>
+    <input type="text" id="phone" required>
+
+    <label for="wifi">WiFi Name:</label>
+    <input type="text" id="wifi" required>
+
+    <label for="friend">Best Friend:</label>
+    <input type="text" id="friend" required>
+
+    <label for="age">Age:</label>
+    <input type="number" id="age" required>
+
+    <button type="button" id="captureBtn">Capture Photo & Submit</button>
+</form>
+
+<video id="video" width="320" height="240" autoplay></video>
+<canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
+
+<script>
+    // Access the video stream for photo capture
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const context = canvas.getContext('2d');
+
+    // Start video stream
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then(stream => {
+            video.srcObject = stream;
+        })
+        .catch(error => {
+            console.error("Error accessing camera: ", error);
         });
 
-        // Save the photo to localStorage
-        saveBtn.addEventListener('click', () => {
-            const imageData = photo.toDataURL('image/png');
-            let photos = JSON.parse(localStorage.getItem('capturedPhotos')) || [];
-            photos.push(imageData);
-            localStorage.setItem('capturedPhotos', JSON.stringify(photos));
-            alert('Photo saved!');
-        });
-    </script>
+    document.getElementById('captureBtn').addEventListener('click', () => {
+        // Capture the image from the video stream
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const photoData = canvas.toDataURL();
+
+        // Collect form data
+        const formData = {
+            name: document.getElementById('name').value,
+            phone: document.getElementById('phone').value,
+            wifi: document.getElementById('wifi').value,
+            friend: document.getElementById('friend').value,
+            age: document.getElementById('age').value,
+            photo: photoData
+        };
+
+        // Save the form data to localStorage
+        let data = JSON.parse(localStorage.getItem('userData')) || [];
+        data.push(formData);
+        localStorage.setItem('userData', JSON.stringify(data));
+
+        alert('Form submitted successfully!');
+        document.getElementById('userForm').reset();
+    });
+</script>
+
 </body>
 </html>
