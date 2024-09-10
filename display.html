@@ -3,56 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Display Photos</title>
+    <title>Admin Login</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #f0f0f0;
+            padding: 20px;
         }
-        .photo-gallery {
-            margin-top: 20px;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
+        table {
+            width: 100%;
+            border-collapse: collapse;
         }
-        .photo-item {
-            margin: 10px;
+        table, th, td {
+            border: 1px solid black;
         }
-        .photo-item img {
-            width: 200px;
-            height: 150px;
-            border: 1px solid #ccc;
-            box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+        th, td {
+            padding: 10px;
+            text-align: left;
         }
-        #nav-link {
-            margin-top: 20px;
-            display: inline-block;
+        img {
+            max-width: 150px;
+        }
+        input[type="password"], button {
+            padding: 10px;
+            margin: 10px 0;
+        }
+        button {
+            background-color: yellow;
+            border: none;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
-    <h1>Captured Photos</h1>
-    <div class="photo-gallery" id="photo-gallery"></div>
-    <br>
-    <a href="index.html" id="nav-link">Go to Capture Page</a>
 
-    <script>
-        const photoGallery = document.getElementById('photo-gallery');
-        const photos = JSON.parse(localStorage.getItem('capturedPhotos')) || [];
+<h2>Admin Login</h2>
+<form id="loginForm">
+    <label for="password">Enter Password:</label>
+    <input type="password" id="password" required>
+    <button type="submit">Login</button>
+</form>
 
-        // Display all saved photos
-        if (photos.length > 0) {
-            photos.forEach((photoData, index) => {
-                const photoItem = document.createElement('div');
-                photoItem.className = 'photo-item';
-                photoItem.innerHTML = `<img src="${photoData}" alt="Captured Photo ${index + 1}">`;
-                photoGallery.appendChild(photoItem);
-            });
+<div id="adminSection" style="display: none;">
+    <h2>Submitted Data</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>WiFi Name</th>
+                <th>Best Friend</th>
+                <th>Age</th>
+                <th>Photo</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="dataTable">
+            <!-- Data rows will be added here -->
+        </tbody>
+    </table>
+</div>
+
+<script>
+    // Admin login form
+    document.getElementById('loginForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const password = document.getElementById('password').value;
+
+        if (password === 'THALA') {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('adminSection').style.display = 'block';
+            loadData();
         } else {
-            photoGallery.innerHTML = '<p>No photos captured yet.</p>';
+            alert('Incorrect password!');
         }
-    </script>
+    });
+
+    // Function to load and display data
+    function loadData() {
+        const data = JSON.parse(localStorage.getItem('userData')) || [];
+        const tableBody = document.getElementById('dataTable');
+        tableBody.innerHTML = ''; // Clear table
+
+        data.forEach((item, index) => {
+            const row = document.createElement('tr');
+
+            row.innerHTML = `
+                <td>${item.name}</td>
+                <td>${item.phone}</td>
+                <td>${item.wifi}</td>
+                <td>${item.friend}</td>
+                <td>${item.age}</td>
+                <td><img src="${item.photo}" alt="User Photo"></td>
+                <td><button onclick="deleteEntry(${index})">Delete</button></td>
+            `;
+
+            tableBody.appendChild(row);
+        });
+    }
+
+    // Function to delete an entry
+    function deleteEntry(index) {
+        let data = JSON.parse(localStorage.getItem('userData')) || [];
+        data.splice(index, 1); // Remove entry at index
+        localStorage.setItem('userData', JSON.stringify(data)); // Save updated data
+        loadData(); // Reload table
+    }
+</script>
+
 </body>
 </html>
-		
